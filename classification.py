@@ -1,6 +1,9 @@
 #!/usr/bin/python
 import numpy as np
 import matplotlib.pyplot as plt
+from math import log
+
+img_format = 'png'
 
 def split_iris_data(datafile):
     f = open(datafile)
@@ -22,10 +25,49 @@ def plot_classes(datafile):
                 color='green', label='Iris virginica')
     plt.scatter(versicolor[:,0], versicolor[:,1],
                 color='blue', label='Iris versicolor')
-    plt.show()
-    plt.close()
+    plt.xlabel('Length (mm)')
+    plt.ylabel('Width (cm)')
+    plt.legend()
+    plt.savefig('images/iris_scatter.png.%s' % img_format, format=img_format)
+
+def linear_discriminant_analysis_estimates(datafile):
+    data = split_iris_data(datafile)
+    
+    l = float(sum([klass[:,0].size for klass in data]))
+    m = len(data)
+
+    Pl_k = []
+    Mu_k = []
+    Cov = np.zeros((2,2))
+    for klass in data:
+        l_k = float(klass[:,0].size)
+        Pl_k.append(l_k/l)
+        
+        mu_k = np.array((1/l_k) * klass.sum(axis=0)[:-1])
+        Mu_k.append(mu_k)
+        
+        Cov += (1/(l-m))*sum([np.matrix(x[:-1] - mu_k).T * np.matrix(x[:-1] - mu_k) for x in klass])
+
+    return (Pl_k, Mu_k, Cov)
+
+def discrimination_function(Pl, Mu, Cov):
+    def delta(x):
+        CovI =  np.linalg.inv(Cov)
+        return x.dot(CovI).dot(Mu.T) - 0.5*Mu.dot(CovI).dot(Mu.T) + log(Pl)
+    return delta
+
+def decicion_function(data_train):
+    Pl_k, Mu_k, Cov = linear_discriminant_analysis_estimates(data_train)
+    discr_funcs = [discrimination_function(Pl, Mu, Cov) for Pl,Mu in zip(Pl_k,Mu_k)]
+    def y(x):
+        delta = [d_func(x) for d_func in discr_funcs]
+        return delta.index(max(delta))
+    return y
+        
+        
+    
 
 
 if __name__ == "__main__":
-    print split_iris_data('data/irisTrain.dt')
-    
+    dfunc =  decicion_function('data/irisTrain.dt')
+    print dfunc(np.array([5.5, 0.25]))
