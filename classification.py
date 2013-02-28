@@ -43,7 +43,8 @@ def plot_classes(datafile):
     plt.show()
     plt.close()
 
-def k_closest(P,x,k):
+def k_closest(P,k):
+  def model(x):
     Map = lambda(y):[np.linalg.norm(x-y[0:2]),y]
     l_ = map(Map, P)
     l_.sort(key=lambda(x): x[0])
@@ -54,6 +55,7 @@ def k_closest(P,x,k):
         cum[x[2]] = cum[x[2]]+1
     
     return np.argmax(cum)
+  return model
 
 def lenFilterMap(Pred,Map,l):
     c = 0
@@ -130,10 +132,25 @@ def decicion_function(data_train):
         delta = [d_func(x) for d_func in discr_funcs]
         return delta.index(max(delta))
     return y
+
+def model_error(data_test, model):
+    y = model
+
+    f = open(data_test)
+    data = np.loadtxt(f)
+    f.close()
+
+    Y = [y(np.array([a,b])) for a,b,_ in data]
+    T = data.take([2], axis=1)
+    Eq = np.equal(Y,T.T)
+    
+    return Eq[Eq].size / float(Eq.size)
         
 if __name__ == "__main__":
     P = get_data('data/irisTrain.dt')
+    
+    for k in [1,3,7,9,11,13,15,31]:
+        print 'error for %d is %f' % (k,model_error('data/irisTest.dt',k_closest(P,k)))
 
-    print k_closest(P,[5.0,0.35],3)
     #dfunc =  decicion_function('data/irisTrain.dt')
     #print dfunc(np.array([5.5, 0.25]))
