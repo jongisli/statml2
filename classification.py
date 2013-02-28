@@ -64,10 +64,19 @@ def decicion_function(data_train):
         return delta.index(max(delta))
     return y
         
-        
+def model_error(data_train, data_test):
+    y = decicion_function(data_train)
+
+    f = open(data_test)
+    data = np.loadtxt(f)
+    f.close()
+
+    Y = [y(np.array([a,b])) for a,b,_ in data]
+    T = data.take([2], axis=1)
+    Eq = np.equal(Y,T.T)
     
+    return Eq[Eq].size / float(Eq.size)
 
 
 if __name__ == "__main__":
-    dfunc =  decicion_function('data/irisTrain.dt')
-    print dfunc(np.array([5.5, 0.25]))
+    print model_error('data/irisTrain.dt','data/irisTest.dt')
