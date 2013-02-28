@@ -1,6 +1,9 @@
 #!/usr/bin/python
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+from math import log
+
+img_format = 'png'
 
 def get_data(datafile):
     f = open(datafile)
@@ -26,7 +29,6 @@ def plot_classes(datafile):
                 color='green', label='Iris virginica')
     plt.scatter(versicolor[:,0], versicolor[:,1],
                 color='blue', label='Iris versicolor')
-    
     circ = plt.Circle((0,0), radius=6.00, fill=False, color='g')
     axes.add_patch(circ)
     circ = plt.Circle((0,0), radius=5.50, fill=False, color='b')
@@ -41,11 +43,17 @@ def plot_classes(datafile):
     plt.show()
     plt.close()
 
-def FilterMap(Pred,Map,l):
-    return [x if Pred(Map(x)) for x in l]
-
-def k_closest(l,k):
-    f = F
+def k_closest(P,x,k):
+    Map = lambda(y):[np.linalg.norm(x-y[0:2]),y]
+    l_ = map(Map, P)
+    l_.sort(key=lambda(x): x[0])
+    ks = map(lambda(x) : x[1],l_)[0:k]
+    
+    cum = np.array([0,0,0])
+    for x in ks:
+        cum[x[2]] = cum[x[2]]+1
+    
+    return np.argmax(cum)
 
 def lenFilterMap(Pred,Map,l):
     c = 0
@@ -89,7 +97,43 @@ def getCircle(P,x,k):
    
     return rad,plt.Circle(x, radius=rad, fill = False)
 
-if __name__ == "__main__":
-    print split_iris_data('data/irisTrain.dt')
-    plot_classes('data/irisTrain.dt')
+def linear_discriminant_analysis_estimates(datafile):
+    data = split_iris_data(datafile)
     
+    l = float(sum([klass[:,0].size for klass in data]))
+    m = len(data)
+
+    Pl_k = []
+    Mu_k = []
+    Cov = np.zeros((2,2))
+    for klass in data:
+        l_k = float(klass[:,0].size)
+        Pl_k.append(l_k/l)
+        
+        mu_k = np.array((1/l_k) * klass.sum(axis=0)[:-1])
+        Mu_k.append(mu_k)
+        
+        Cov += (1/(l-m))*sum([np.matrix(x[:-1] - mu_k).T * np.matrix(x[:-1] - mu_k) for x in klass])
+
+    return (Pl_k, Mu_k, Cov)
+
+def discrimination_function(Pl, Mu, Cov):
+    def delta(x):
+        CovI =  np.linalg.inv(Cov)
+        return x.dot(CovI).dot(Mu.T) - 0.5*Mu.dot(CovI).dot(Mu.T) + log(Pl)
+    return delta
+
+def decicion_function(data_train):
+    Pl_k, Mu_k, Cov = linear_discriminant_analysis_estimates(data_train)
+    discr_funcs = [discrimination_function(Pl, Mu, Cov) for Pl,Mu in zip(Pl_k,Mu_k)]
+    def y(x):
+        delta = [d_func(x) for d_func in discr_funcs]
+        return delta.index(max(delta))
+    return y
+        
+if __name__ == "__main__":
+    P = get_data('data/irisTrain.dt')
+
+    print k_closest(P,[5.0,0.35],3)
+    #dfunc =  decicion_function('data/irisTrain.dt')
+    #print dfunc(np.array([5.5, 0.25]))
