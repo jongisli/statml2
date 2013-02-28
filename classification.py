@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from math import log
 
 img_format = 'png'
@@ -21,7 +21,6 @@ def split_iris_data(datafile):
 
 def plot_classes(datafile):
     setosa, virginica, versicolor = split_iris_data(datafile)
-    _, axes = plt.subplots()
     
     plt.scatter(setosa[:,0], setosa[:,1],
                 color='red', label='Iris setosa')
@@ -29,17 +28,8 @@ def plot_classes(datafile):
                 color='green', label='Iris virginica')
     plt.scatter(versicolor[:,0], versicolor[:,1],
                 color='blue', label='Iris versicolor')
-    circ = plt.Circle((0,0), radius=6.00, fill=False, color='g')
-    axes.add_patch(circ)
-    circ = plt.Circle((0,0), radius=5.50, fill=False, color='b')
-    axes.add_patch(circ)
 
-    data = get_data(datafile)
-
-    rad,circ = getCircle(data,[6.0,0.27],3)
-    axes.add_patch(circ)
-    print rad
-
+    data = get_data(datafile) 
     plt.show()
     plt.close()
 
@@ -57,47 +47,6 @@ def k_closest(P,k):
     return np.argmax(cum)
   return model
 
-def lenFilterMap(Pred,Map,l):
-    c = 0
-    for e in l:
-        if Pred(Map(e)):
-	    c = c+1
-    return c
-
-def sphere_count(P,x,rad):
-    Map = lambda(y):np.linalg.norm(x-y)
-    Pred = lambda(d) : d <= rad
-    return lenFilterMap(Pred,Map,P)
-
-def sphere_rad(P,x,k,Rmin,Rmax):
-    eps = 0.0005
-    i,j=Rmin,Rmax
-    while(j-i > eps):
-       #| too small | unknown | too large
-       #Rmin         i         j         Rmax
-       #
-       #The radius of the circle lies inside [i,j)
-       
-       h=(j-i)/2.0
-       
-       c=(sphere_count(P,x,h))
-       if c < k:
-           i = h
-       elif c > k:
-           j = h
-       else:
-           return h
-    return h
-
-def getCircle(P,x,k):
-    P=P[:,0:2]
-    norms = map(lambda(x): np.linalg.norm(x),P)
-    Rmin = min(norms)
-    Rmax = max(norms)
-
-    rad=sphere_rad(P,x,k,Rmin,Rmax)
-   
-    return rad,plt.Circle(x, radius=rad, fill = False)
 
 def linear_discriminant_analysis_estimates(datafile):
     data = split_iris_data(datafile)
@@ -152,5 +101,3 @@ if __name__ == "__main__":
     for k in [1,3,7,9,11,13,15,31]:
         print 'error for %d is %f' % (k,model_error('data/irisTest.dt',k_closest(P,k)))
 
-    #dfunc =  decicion_function('data/irisTrain.dt')
-    #print dfunc(np.array([5.5, 0.25]))
