@@ -33,9 +33,9 @@ def plot_classes(datafile):
     plt.show()
     plt.close()
 
-def k_closest(P,k):
+def k_closest(metric,P,k):
   def model(x):
-    Map = lambda(y):[np.linalg.norm(x-y[0:2]),y]
+    Map = lambda(y):[metric(x-y[0:2]),y]
     l_ = map(Map, P)
     l_.sort(key=lambda(x): x[0])
     ks = map(lambda(x) : x[1],l_)[0:k]
@@ -47,6 +47,12 @@ def k_closest(P,k):
     return np.argmax(cum)
   return model
 
+def k_closest_norm(P,k):
+    k_closest(np.linalg.norm,P,k)
+
+def k_closest_M(P,k):
+    M=np.array([[1,0],[0,10]])
+    k_closest(lambda(x,y) : M.dot(x) - M.dot(y),P,k)
 
 def linear_discriminant_analysis_estimates(datafile):
     data = split_iris_data(datafile)
