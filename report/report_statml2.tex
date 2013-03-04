@@ -44,6 +44,42 @@ $$\text{RMS}_1 \approx 4.5$$
 and
 $$\text{RMS}_2 \approx 5.$$
 
+\subsection*{II.1.2 Maximum a posteriori solution}
+
+We also implemented the MAP estimate in \verb=regression.py=. In figure $1$ we can see the RMS error for the MAP estimate plotted for different values of the precision parameter $\alpha$. The RMS for the maximum likelihood solution was included in the plot for the same dataset for comparison.
+
+Comparing the selections we see that selection $1$ seems to provide better prediction than selection $2$ given the minimizing $\alpha$ value. And if we chose $\alpha$ to be anywhere between $0$ and $0.1$ (not including $0$) we will get better results with the MAP estimate than the ML one. Similarly if we have $0 < \alpha \leq 0.24$ for selection $2$ the MAP provides better prediction than the ML one.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+  		\centering
+  		\includegraphics[width=\textwidth]{../images/rms_selection1.png}
+  		\caption{Selection $1$}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+  		\centering
+  		\includegraphics[width=\textwidth]{../images/rms_selection2.png}
+  		\caption{Selection $2$}
+  \end{subfigure}
+  	\caption{RMS for MAP and ML}
+\end{figure}
+
+\section*{II.2 Classification}
+
+\subsection*{II.2.1 Linear discriminant analysis}
+
+We implemented the linear discriminant analysis algorithm in \verb=classification.py=. In figure $2$ we can see the three different classes in the training data.
+\begin{figure}[H]
+	\centering
+  		\centering
+  		\includegraphics[width=0.6\textwidth]{../images/iris_scatter.png}
+  		\caption{Scatter plot of Iris data}
+\end{figure}
+Now to quantify the error of the LDA we compute the probability of misclassification for the training and test data respectively. The errors are
+$$\epsilon_{\text{training}} = 0.21$$
+and
+$$\epsilon_{\text{test}} = 0.18$$
 
 \begin{comment}
 \begin{figure}[H]
