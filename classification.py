@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import numpy as np
-import matplotlib.pyplot as plt
+from numpy.linalg import norm
+#import matplotlib.pyplot as plt
 from math import log
 
 img_format = 'png'
@@ -48,14 +49,16 @@ def k_closest(metric,P,k):
   return model
 
 def k_closest_norm(P,k):
-    k_closest(np.linalg.norm,P,k)
+    return k_closest(norm,P,k)
 
 def k_closest_M(P,k):
     M=np.array([[1,0],[0,10]])
-    k_closest(lambda(x,y) : M.dot(x) - M.dot(y),P,k)
+    return k_closest(lambda(x,y) : norm(M.dot(x) - M.dot(y)) ,P,k)
 
-def linear_discriminant_analysis_estimates(datafile):
-    data = split_iris_data(datafile)
+def linear_discriminant_analysis_estimates(datafile,xScaler=lambda(x):x):
+    data = map(xScaler,split_iris_data(datafile))
+
+    
     
     l = float(sum([klass[:,0].size for klass in data]))
     m = len(data)
@@ -104,6 +107,13 @@ def model_error(data_test, model):
 if __name__ == "__main__":
     P = get_data('data/irisTrain.dt')
     
+    #M=np.array([[1,0],[0,10]])
+    #linear_discriminant_analysis_estimates(P,xScaler=lambda(x,y,c):M.dot(x))
+    
     for k in [1,3,7,9,11,13,15,31]:
-        print 'error for %d is %f' % (k,model_error('data/irisTest.dt',k_closest(P,k)))
+        print 'norm error for %d is %f' % (k,model_error('data/irisTest.dt',
+	    k_closest_norm(P,k)))
+    for k in [1,3,7,9,11,13,15,31]:
+        print 'M error for %d is %f' % (k,model_error('data/irisTest.dt',
+	    k_closest_M(P,k)))
 
