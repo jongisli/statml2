@@ -125,11 +125,54 @@ if __name__ == "__main__":
     
     #M=np.array([[1,0],[0,10]])
     #linear_discriminant_analysis_estimates(P,xScaler=lambda(x,y,c):M.dot(x))
-    
-    for k in [1,3,7,9,11,13,15,31]:
-        print 'norm error for %d is %f' % (k,model_error('data/irisTest.dt',
-	    k_closest_norm(P,k)))
-    for k in [1,3,7,9,11,13,15,31]:
-        print 'M error for %d is %f' % (k,model_error('data/irisTest.dt',
-	    k_closest_M(P,k)))
+   
+    print 'Precision with norm as a metric on irisTrain:\\\\' 
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    NormTrain = [None]*32
+    for k in [1,3,5,7]:
+        NormTrain[k]=model_error('data/irisTrain.dt',
+	    k_closest_norm(P,k))
+        print '%2d & %f\\\\' % (k, NormTrain[k])
+    print '\\end{tabular}'
 
+    print 'Precision with norm as a metric on irisTest:\\\\' 
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    NormTest = [None]*32
+    for k in [1,3,5,7]:
+        NormTest[k]=model_error('data/irisTest.dt',
+	    k_closest_norm(P,k))
+        print '%2d & %f\\\\' % (k, NormTest[k])
+    print '\\end{tabular}'
+    print 'Precision with d as a metric on irisTrain:\\\\'
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    MTrain = [None]*32
+    for k in [1,3,5,7]:
+        MTrain[k]=model_error('data/irisTrain.dt',
+	    k_closest_M(P,k))
+        print '%2d & %f\\\\' % (k,MTrain[k])
+    print '\\end{tabular}'
+    print 'Precision with d as a metric on irisTest:\\\\'
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    MTest = [None]*32
+    for k in [1,3,5,7]:
+        MTest[k]=model_error('data/irisTest.dt',
+	    k_closest_M(P,k))
+        print '%2d & %f\\\\' % (k,MTest[k])
+    
+    print '\\end{tabular}'
+    print 'Difference in precision between Norm and d on irisTrain:\\\\'
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    for k in [1,3,5,7]:
+        print '%2d & %f\\\\' % (k,NormTrain[k]-MTrain[k])
+    print '\\end{tabular}'
+    print 'Difference in precision between Norm and d on irisTest:\\\\'
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    for k in [1,3,5,7]:
+        print '%2d & %f\\\\' % (k,NormTest[k]-MTest[k])
+    print '\\end{tabular}'
