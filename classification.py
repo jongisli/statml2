@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import numpy as np
 from numpy.linalg import norm
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from math import log
 
 img_format = 'png'
@@ -29,9 +29,10 @@ def plot_classes(datafile):
                 color='green', label='Iris virginica')
     plt.scatter(versicolor[:,0], versicolor[:,1],
                 color='blue', label='Iris versicolor')
-
-    data = get_data(datafile) 
-    plt.show()
+    plt.xlabel('Length (mm)')
+    plt.ylabel('Width (cm)')
+    plt.legend()
+    plt.savefig('images/iris_scatter.%s' % img_format, format=img_format)
     plt.close()
 
 def k_closest(metric,P,k):
@@ -56,9 +57,7 @@ def k_closest_M(P,k):
     return k_closest(lambda(x,y) : norm(M.dot(x) - M.dot(y)) ,P,k)
 
 def linear_discriminant_analysis_estimates(datafile,xScaler=lambda(x):x):
-    data = map(xScaler,split_iris_data(datafile))
-
-    
+    data = split_iris_data(datafile)   
     
     l = float(sum([klass[:,0].size for klass in data]))
     m = len(data)
@@ -102,9 +101,17 @@ def model_error(data_test, model):
     T = data.take([2], axis=1)
     Eq = np.equal(Y,T.T)
     
-    return Eq[Eq].size / float(Eq.size)
+    return 1 - Eq[Eq].size / float(Eq.size)
         
 if __name__ == "__main__":
+    model = decicion_function('data/irisTrain.dt')
+
+    print "The training error of LDA:"
+    print model_error('data/irisTrain.dt', model)
+    print "The test error of LDA:"
+    print model_error('data/irisTest.dt', model)
+    
+    """
     P = get_data('data/irisTrain.dt')
     
     #M=np.array([[1,0],[0,10]])
@@ -116,4 +123,4 @@ if __name__ == "__main__":
     for k in [1,3,7,9,11,13,15,31]:
         print 'M error for %d is %f' % (k,model_error('data/irisTest.dt',
 	    k_closest_M(P,k)))
-
+    """
