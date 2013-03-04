@@ -6,12 +6,20 @@ from math import log
 
 img_format = 'png'
 
+#Pre: datafile points to an
+#     existant file with no
+#     restrictions.
+#Ret: The data inside the
+#     datafile
 def get_data(datafile):
     f = open(datafile)
     data = np.loadtxt(f)
     f.close()
     return data
 
+#Pre: datafile is an existant
+#     iris data file
+#Ret: Names of the different classess
 def split_iris_data(datafile):
     data = get_data(datafile)
     class_0 = data[data[:,2] == 0]
@@ -20,6 +28,10 @@ def split_iris_data(datafile):
 
     return (class_0, class_1, class_2)
 
+#Pre: datafile is an existant
+#     iris data file
+#Post: shows a scatterplot of
+#      data in datafile
 def plot_classes(datafile):
     setosa, virginica, versicolor = split_iris_data(datafile)
     
@@ -34,6 +46,10 @@ def plot_classes(datafile):
     plt.show()
     plt.close()
 
+#Pre: metric is a metric
+#     P is a set of points
+#     k is number of
+#     neigphourss
 def k_closest(metric,P,k):
   def model(x):
     Map = lambda(y):[metric(x-y[0:2]),y]
