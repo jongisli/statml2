@@ -1,0 +1,102 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{a4wide}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{xfrac} 				% gives \sfrac
+\usepackage{amsmath}
+\usepackage{enumerate} 		% allows you to change counters
+\usepackage{verbatim}
+\usepackage{comment}				% gives comment environment
+\usepackage{hyperref}
+\usepackage{amssymb}				% gives f.x. \mathbb{R}
+
+% graphics packages
+\usepackage{graphicx}
+\usepackage{caption} 	
+\usepackage{subcaption}
+\usepackage{float}
+
+\title{
+	Assignment 2 - Basic Learning Algorithms	\\
+	Statistical Methods for Machine Learning
+  }
+\author{
+	Guðmundur Páll Kjartansson \\
+	Jón Gísli Egilsson
+}
+
+% Uncomment to set paragraph indentation to 0 points, and skips a line
+% after an ended paragraph.
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+
+\begin{document}
+\maketitle
+
+\section*{II.1 Regression}
+
+\subsection*{II.1.1 Maximum likelihood solution}
+
+The models for variable selections $1$ and $2$ are implemented in the file \verb=regression.py=. We then applied both models to the test set and computed the RMS averaged over $100$ different selections of training and test data (where the training data was always $80\%$ and test data $20\%$ of the data in the file \verb=bodyfat.txt=). Our measured RMS errors for selection $1$ and $2$ respectively were
+$$\text{RMS}_1 \approx 4.5$$
+and
+$$\text{RMS}_2 \approx 5.$$
+
+
+\begin{comment}
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+  		\centering
+  		\includegraphics[width=\textwidth]{../week4/images/prob41asurf.png}
+  		\caption{$x=(0,-1)$}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+  		\centering
+  		\includegraphics[width=\textwidth]{../week4/images/prob41bsurf.png}
+  		\caption{$x=(0,0.05)$}
+  \end{subfigure}
+  	\caption{Surface plots of $m(p)$ at different points}
+\end{figure}
+\end{comment}
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
