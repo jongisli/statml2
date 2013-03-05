@@ -11,7 +11,6 @@ def design_matrix(data, columns):
     ones = np.ones([n,1])
     return np.hstack((ones, selection))
 
-
 def maximum_likelihood_model(datafile, design_columns, target_columns):
     f = open(datafile)
     data = np.loadtxt(f)
