@@ -72,8 +72,8 @@ def k_closest_M(P,k):
     M=np.array([[1,0],[0,10]])
     return k_closest(lambda(x,y) : norm(M.dot(x) - M.dot(y)) ,P,k)
 
-def linear_discriminant_analysis_estimates(datafile,xScaler=lambda(x):x):
-    data = split_iris_data(datafile)   
+def linear_discriminant_analysis_estimates(datafile):
+    data = split_iris_data(datafile)
     
     l = float(sum([klass[:,0].size for klass in data]))
     m = len(data)
@@ -118,25 +118,31 @@ def model_error(data_test, model):
     Eq = np.equal(Y,T.T)
     
     return 1 - Eq[Eq].size / float(Eq.size)
+
+def scale_data(datafiles, M):
+    for datafile in datafiles:
+        data = np.loadtxt(datafile)
+        data[:,[0,1]] = data.take([0,1], axis=1).dot(M)
+        np.savetxt(datafile + '.scaled', data, fmt='%.3e',)
         
 if __name__ == "__main__":
-    model = decicion_function('data/irisTrain.dt')
 
+    #M = np.array([[1,0],[0,10]])
+    #datafiles = ['data/irisTrain.dt', 'data/irisTest.dt']
+    #scale_data(datafiles, M)
+    
+    model = decicion_function('data/irisTrain.dt')
     print "The training error of LDA:"
     print model_error('data/irisTrain.dt', model)
     print "The test error of LDA:"
     print model_error('data/irisTest.dt', model)
+    print
     
-    """
-    P = get_data('data/irisTrain.dt')
+    print "SCALED DATA:"
+    model = decicion_function('data/irisTrain.dt.scaled')
+    print "The training error of LDA:"
+    print model_error('data/irisTrain.dt.scaled', model)
+    print "The test error of LDA:"
+    print model_error('data/irisTest.dt.scaled', model)
     
-    #M=np.array([[1,0],[0,10]])
-    #linear_discriminant_analysis_estimates(P,xScaler=lambda(x,y,c):M.dot(x))
     
-    for k in [1,3,7,9,11,13,15,31]:
-        print 'norm error for %d is %f' % (k,model_error('data/irisTest.dt',
-	    k_closest_norm(P,k)))
-    for k in [1,3,7,9,11,13,15,31]:
-        print 'M error for %d is %f' % (k,model_error('data/irisTest.dt',
-	    k_closest_M(P,k)))
-    """
