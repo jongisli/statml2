@@ -1,0 +1,235 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{a4wide}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{xfrac} 				% gives \sfrac
+\usepackage{amsmath}
+\usepackage{enumerate} 		% allows you to change counters
+\usepackage{verbatim}
+\usepackage{comment}				% gives comment environment
+\usepackage{hyperref}
+\usepackage{amssymb}				% gives f.x. \mathbb{R}
+
+% graphics packages
+\usepackage{graphicx}
+\usepackage{caption} 	
+\usepackage{subcaption}
+\usepackage{float}
+
+\title{
+	Assignment 2 - Basic Learning Algorithms	\\
+	Statistical Methods for Machine Learning
+  }
+\author{
+	Guðmundur Páll Kjartansson \\
+	Jón Gísli Egilsson
+}
+
+% Uncomment to set paragraph indentation to 0 points, and skips a line
+% after an ended paragraph.
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+
+\begin{document}
+\maketitle
+
+\section*{II.1 Regression}
+
+\subsection*{II.1.1 Maximum likelihood solution}
+
+The models for variable selections $1$ and $2$ are implemented in the file \verb=regression.py=. We then applied both models to the test set and computed the RMS averaged over $100$ different selections of training and test data (where the training data was always $80\%$ and test data $20\%$ of the data in the file \verb=bodyfat.txt=). Our measured RMS errors for selection $1$ and $2$ respectively were
+$$\text{RMS}_1 \approx 4.5$$
+and
+$$\text{RMS}_2 \approx 5.$$
+
+
+\begin{comment}
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+  		\centering
+  		\includegraphics[width=\textwidth]{../week4/images/prob41asurf.png}
+  		\caption{$x=(0,-1)$}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+  		\centering
+  		\includegraphics[width=\textwidth]{../week4/images/prob41bsurf.png}
+  		\caption{$x=(0,0.05)$}
+  \end{subfigure}
+  	\caption{Surface plots of $m(p)$ at different points}
+\end{figure}
+\end{comment}
+\section*{II.2.2}
+The k-nearest neighbour classifier is implemented in the file classification.py,
+in a function called k\_closest\_norm.\\
+We train the function on the training dataset and then test its accuracy
+on the training and test datasets for k=1,3,5 and 7 neigbours.\\
+Error on irisTrain:\\
+\begin{center}
+\begin{tabular}{l|llll}
+ k & total error & class 0 & class 1 & class 2\\
+ 1 & 0.000000 & 0.000000 & 0.000000 & 0.000000\\
+ 3 & 0.289474 & 0.100000 & 0.357143 & 0.357143\\
+ 5 & 0.263158 & 0.000000 & 0.500000 & 0.214286\\
+ 7 & 0.315789 & 0.100000 & 0.571429 & 0.214286\\
+\end{tabular}
+\end{center}
+Error with norm as a metric on irisTest:\\
+\begin{center}
+\begin{tabular}{l|llll}
+ k & total error & class 0 & class 1 & class 2\\
+ 1 & 0.350000 & 0.138889 & 0.657143 & 0.241379\\
+ 3 & 0.270000 & 0.083333 & 0.400000 & 0.344828\\
+ 5 & 0.220000 & 0.083333 & 0.285714 & 0.310345\\
+ 7 & 0.230000 & 0.111111 & 0.371429 & 0.206897\\
+\end{tabular}
+\end{center}
+We can see that the nearest neighbour model has perfect accuracy when
+applied on its own trainingset with respect to one neighbour. The reason
+is that every point we classify will be classified based on itself from
+the original dataset. The error tends to increase if we increase the number of
+neighbours beyond k=1, since some points have close neighbours belonging to another class (this is especially true for class 1 and 2 ... since they have a lot of overlap).\\
+When the probability model from the training set is applied on the test set,
+the most accurate value for k appears to be 5. The case when k=1 is worst
+of the tested values, since the closest neighbour of a given point is not
+so likely to belong to the same class.
+\section*{II.2.3}
+In this proof I use the fact that M is non-singular, specifically the property that for any vector $x$ there is a unique $y$ such that $Mx=y$ and vice versa.\\
+
+Proof of nonnegativity:
+\[
+d(x,y)>=0 \Rightarrow ||Mx-Mz||>=0
+\]
+Follows trivially from the definition of norm.\\
+
+Proof that $d(x,y)=0 => x=y$:
+\begin{align*}
+&d(x,y)=0\\
+\Rightarrow &Mx-Mz||=0\\
+\Rightarrow &x'-z'=0, \text{where }Mx=x', Mz=z'\\
+\Rightarrow &x'=z'\\
+\Rightarrow &x=z
+\end{align*}
+
+Proof that $x=y => d(x,y)=0$:
+\begin{align*}
+&x=y\\
+\Rightarrow& x-y=0\\
+\Rightarrow& Mx-My=0\\
+\Rightarrow& ||Mx-My||=0=d(x,y)\\
+\end{align*}
+Proof of symmetry $d(x,y)=d(y,x)$, by contradiction:
+\begin{align*}
+&d(x,y)\neq d(y,x)\\
+\Rightarrow &||Mx-My||\neq ||My-Mx||\\
+\Rightarrow &||c||\neq ||-c||, \text{where } c= Mx-My\\
+\end{align*}
+Which contradicts the norm of vectors. That means the
+symmetry holds.\\
+Proof of triangular inequality:
+\begin{align*}
+d(x,z) \leq d(x,y) + d(y,z)\\
+\Rightarrow||Mx-Mz|| \leq ||Mx-My|| + ||My-Mz||\\
+\Rightarrow  (Mx_0-Mz_0)^2+(Mx_1-Mz_1)^2 \leq\\
+             ||Mx-My||^2+2||Mx-My||||My-Mz||+||My-Mz||^2
+%\Rightarrow  (Mx_0-Mz_0)^2+(Mx_1-Mz_1)^2 \leq\\
+%             Mx_0^2+Mx_1^2-2MxMy+2||Mx-My||||My-Mz||-2My_0Mz_0-2My_1Mz_1
+%             +Mz_0^2+Mz_1^2
+\end{align*}
+\section{II 2.4}
+Now we will repeat the classification done in section II 2.2, except we will
+use the metric given in II 2.3 on the dataset.\\
+\\
+First we will try to classify irisTrain with a probability model based on the
+d metric. The error of these results can be seen in the table below:
+Error with d as a metric on irisTrain:\\
+\begin{center}
+\begin{tabular}{l|llll}
+ k & total error & class 0 & class 1 & class 2\\
+ 1 & 0.000000 & 0.000000 & 0.000000 & 0.000000\\
+ 3 & 0.236842 & 0.000000 & 0.285714 & 0.357143\\
+ 5 & 0.315789 & 0.100000 & 0.500000 & 0.285714\\
+ 7 & 0.289474 & 0.100000 & 0.500000 & 0.214286\\
+\end{tabular}
+\end{center}
+As expected, k=1 is optimal here. We can see that the error for class 0 is always very low, but it's higher for the other classes.\\
+Error with d as a metric on irisTest:\\
+\begin{center}
+\begin{tabular}{l|llll}
+ k & total error & class 0 & class 1 & class 2\\
+ 1 & 0.290000 & 0.083333 & 0.600000 & 0.172414\\
+ 3 & 0.310000 & 0.083333 & 0.342857 & 0.551724\\
+ 5 & 0.270000 & 0.083333 & 0.342857 & 0.413793\\
+ 7 & 0.230000 & 0.083333 & 0.342857 & 0.275862\\
+\end{tabular}
+\end{center}
+Here we seem to misclassify the same amount of points for class 0 at all times and for class 1 at all times except when k=1.\\
+These error values are different from those we got in $II 2.2$ when we
+used the euclidian-norm.\\
+\subsection*{Performance differences}
+Difference in error between Norm and d on irisTrain:\\
+\begin{center}
+\begin{tabular}{l|llll}
+ k & total error & class 0 & class 1 & class 2\\
+ 1 & 0.000000 & 0.000000 & 0.000000 & 0.000000 \\
+ 3 & 0.052632 & 0.100000 & 0.071429 & 0.000000 \\
+ 5 & -0.052632 & -0.100000 & 0.000000 & -0.071429 \\
+ 7 & 0.026316 & 0.000000 & 0.071429 & 0.000000 \\
+\end{tabular}
+\end{center}
+Difference in error between Norm and d on irisTest:\\
+\begin{center}
+\begin{tabular}{l|llll}
+ k & total error & class 0 & class 1 & class 2\\
+ 1 & 0.060000 & 0.055556 & 0.057143 & 0.068966 \\
+ 3 & -0.040000 & 0.000000 & 0.057143 & -0.206897 \\
+ 5 & -0.050000 & 0.000000 & -0.057143 & -0.103448 \\
+ 7 & 0.000000 & 0.027778 & 0.028571 & -0.068966 \\
+\end{tabular}
+\end{center}
+
+A positive value means that the d metric is more precise and vice versa. The d metric
+is apparently less precise for k=3 and k=5.
+The reason for these differences is that when we look for the nearest
+neighbours using the d metric, the y-axis is scaled by a factor of 10. This means that neighbours to the left and right of a point will appear ten times
+closer than neighbours above and below.
+\section{II 2.5}
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
