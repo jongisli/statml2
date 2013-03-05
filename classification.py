@@ -139,10 +139,60 @@ if __name__ == "__main__":
     print
     
     print "SCALED DATA:"
-    model = decicion_function('data/irisTrain.dt.scaled')
-    print "The training error of LDA:"
-    print model_error('data/irisTrain.dt.scaled', model)
-    print "The test error of LDA:"
-    print model_error('data/irisTest.dt.scaled', model)
+    modelScaled = decicion_function('data/irisTrain.dt.scaled')
+    print "The training error of LDA (scaled):"
+    print model_error('data/irisTrain.dt.scaled', modelScaled)
+    print "The test error of LDA (scaled):"
+    print model_error('data/irisTest.dt.scaled', modelScaled)
+    print
     
-    
+    P = get_data('data/irisTrain.dt')
+    print 'Precision with norm as a metric on irisTrain:\\\\' 
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    NormTrain = [None]*32
+    for k in [1,3,5,7]:
+        NormTrain[k]=model_error('data/irisTrain.dt',
+	    k_closest_norm(P,k))
+        print '%2d & %f\\\\' % (k, NormTrain[k])
+    print '\\end{tabular}'
+
+    print 'Precision with norm as a metric on irisTest:\\\\' 
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    NormTest = [None]*32
+    for k in [1,3,5,7]:
+        NormTest[k]=model_error('data/irisTest.dt',
+	    k_closest_norm(P,k))
+        print '%2d & %f\\\\' % (k, NormTest[k])
+    print '\\end{tabular}'
+    print 'Precision with d as a metric on irisTrain:\\\\'
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    MTrain = [None]*32
+    for k in [1,3,5,7]:
+        MTrain[k]=model_error('data/irisTrain.dt',
+	    k_closest_M(P,k))
+        print '%2d & %f\\\\' % (k,MTrain[k])
+    print '\\end{tabular}'
+    print 'Precision with d as a metric on irisTest:\\\\'
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    MTest = [None]*32
+    for k in [1,3,5,7]:
+        MTest[k]=model_error('data/irisTest.dt',
+	    k_closest_M(P,k))
+        print '%2d & %f\\\\' % (k,MTest[k])
+    print '\\end{tabular}'
+    print 'Difference in precision between Norm and d on irisTrain:\\\\'
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    for k in [1,3,5,7]:
+        print '%2d & %f\\\\' % (k,NormTrain[k]-MTrain[k])
+    print '\\end{tabular}'
+    print 'Difference in precision between Norm and d on irisTest:\\\\'
+    print '\\begin{tabular}{ll}'
+    print ' k & precision\\\\'
+    for k in [1,3,5,7]:
+        print '%2d & %f\\\\' % (k,NormTest[k]-MTest[k])
+    print '\\end{tabular}'
