@@ -141,7 +141,21 @@ def scale_data(datafiles, M):
         data = np.loadtxt(datafile)
         data[:,[0,1]] = data.take([0,1], axis=1).dot(M)
         np.savetxt(datafile + '.scaled', data, fmt='%.3e',)
-        
+
+def NNerrorTable(datapath,model,P):
+    print '\\begin{center}'
+    print '\\begin{tabular}{l|l}'
+    print ' k & total error & class 0 & class 1 & class 2\\\\'
+    Error = [None]*32
+    ErrorPerClass = [None]*32
+    for k in [1,3,5,7]:
+        Error[k]=model_error(datapath,model(P,k))
+        ErrorPerClass[k]=model_error_class(datapath,model(P,k))
+        print '%2d & %f & %f & %f & %f\\\\' % (k, Error[k],ErrorPerClass[k][0],ErrorPerClass[k][1],ErrorPerClass[k][2])
+    print '\\end{tabular}'
+    print '\\end{center}'
+    return Error,ErrorPerClass
+
 if __name__ == "__main__":
 
     M = np.array([[1,0],[0,10]])
@@ -165,63 +179,33 @@ if __name__ == "__main__":
     
     P = get_data('data/irisTrain.dt')
     print 'Error with norm as a metric on irisTrain:\\\\' 
-    print '\\begin{tabular}{ll}'
-    print ' k & total error & class 0 & class 1 & class 2\\\\'
-    NormTrain = [None]*32
-    NormPerClassTrain = [None]*32
-    for k in [1,3,5,7]:
-        NormTrain[k]=model_error('data/irisTrain.dt',
-	    k_closest_norm(P,k))
-        NormPerClassTrain[k]=model_error_class('data/irisTrain.dt',
-	    k_closest_norm(P,k))
-        print '%2d & %f & %f & %f & %f\\\\' % (k, NormTrain[k],NormPerClassTrain[k][0],NormPerClassTrain[k][1],NormPerClassTrain[k][2])
-    print '\\end{tabular}'
+    NormTrain,NormPerClassTrain = NNerrorTable('data/irisTrain.dt',k_closest_norm,P)
 
     print 'Error with norm as a metric on irisTest:\\\\' 
-    print '\\begin{tabular}{ll}'
-    print ' k & total error & class 0 & class 1 & class 2\\\\'
-    NormTest = [None]*32
-    NormPerClassTest = [None]*32
-    for k in [1,3,5,7]:
-        NormTest[k]=model_error('data/irisTest.dt',
-	    k_closest_norm(P,k))
-        NormPerClassTest[k]=model_error_class('data/irisTest.dt',
-	    k_closest_norm(P,k))
-        print '%2d & %f & %f & %f & %f\\\\' % (k, NormTest[k],NormPerClassTest[k][0],NormPerClassTest[k][1],NormPerClassTest[k][2])
-    print '\\end{tabular}'
+    NormTest,NormPerClassTest = NNerrorTable('data/irisTest.dt',k_closest_norm,P)
     print 'Error with d as a metric on irisTrain:\\\\'
-    print '\\begin{tabular}{ll}'
-    print ' k & total error & class 0 & class 1 & class 2\\\\'
-    MTrain = [None]*32
-    MPerClassTrain = [None]*32
-    for k in [1,3,5,7]:
-        MTrain[k]=model_error('data/irisTrain.dt',
-	    k_closest_M(P,k))
-        MPerClassTrain[k]=model_error_class('data/irisTrain.dt',
-	    k_closest_M(P,k))
-        print '%2d & %f & %f & %f & %f\\\\' % (k, MTrain[k],MPerClassTrain[k][0],MPerClassTrain[k][1],MPerClassTrain[k][2])
-    print '\\end{tabular}'
+    MTrain,MPerClassTrain = NNerrorTable('data/irisTrain.dt',k_closest_M,P)
+
     print 'Error with d as a metric on irisTest:\\\\'
-    print '\\begin{tabular}{ll}'
-    print ' k & total error & class 0 & class 1 & class 2\\\\'
-    MTest = [None]*32
-    MPerClassTrain = [None]*32
-    for k in [1,3,5,7]:
-        MTest[k]=model_error('data/irisTest.dt',
-	    k_closest_M(P,k))
-        MPerClassTrain[k]=model_error_class('data/irisTrain.dt',
-	    k_closest_M(P,k))
-        print '%2d & %f & %f & %f & %f\\\\' % (k, MTrain[k],MPerClassTrain[k][0],MPerClassTrain[k][1],MPerClassTrain[k][2])
-    print '\\end{tabular}'
+    MTest,MPerClassTest = NNerrorTable('data/irisTest.dt',k_closest_M,P)
+
     print 'Difference in error between Norm and d on irisTrain:\\\\'
     print '\\begin{tabular}{ll}'
-    print ' k & error\\\\'
+    print ' k & total error & class 0 & class 1 & class 2\\\\'
     for k in [1,3,5,7]:
-        print '%2d & %f\\\\' % (k,NormTrain[k]-MTrain[k])
+        print '%2d & %f' % (k,NormTrain[k]-MTrain[k]),
+	for c in [0,1,2]:
+	    print '& %f' % (NormPerClassTrain[k][c]-MPerClassTrain[k][c]),
+	print '\\\\'
     print '\\end{tabular}'
     print 'Difference in error between Norm and d on irisTest:\\\\'
-    print '\\begin{tabular}{ll}'
-    print ' k & error\\\\'
+    print '\\begin{center}'
+    print '\\begin{tabular}{l|l}'
+    print ' k & total error & class 0 & class 1 & class 2\\\\'
     for k in [1,3,5,7]:
-        print '%2d & %f\\\\' % (k,NormTest[k]-MTest[k])
+        print '%2d & %f' % (k,NormTest[k]-MTest[k]),
+	for c in [0,1,2]:
+	    print '& %f' % (NormPerClassTest[k][c]-MPerClassTest[k][c]),
+	print '\\\\'
     print '\\end{tabular}'
+    print '\\end{center}'
