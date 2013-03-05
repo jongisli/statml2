@@ -65,6 +65,40 @@ Comparing the selections we see that selection $1$ seems to provide better predi
   	\caption{RMS for MAP and ML}
 \end{figure}
 
+\subsection*{II.1.3 Maximum a posteriori solution}
+
+We want to prove that 
+$$p(w|t) = \mathcal{N}(w|m_N,S_N)$$
+where
+\begin{align*}
+m_N &= S_N(S_0^{-1}m_0 + \beta \Phi^Tt) \\
+S_N^{-1} &= S_0^{-1} + \beta \Phi^T \Phi.
+\end{align*}
+Now we see that
+\begin{align*}
+\ln(p(w|t)) &\propto \ln(p(w)p(t|w)) \\
+		&= \ln(\mathcal{N}(w|m_0,S_0)) + \ln\left(\prod_{n=1}^N \mathcal{N}(t_n|w^T\phi(x_n),\beta^{-1})\right) \\
+		&= -\frac{1}{2}(w-m_0)^T S_0^{-1} (w-m_0) + \sum_{n=1}^N \left( -\frac{1}{2}(t_n-w^T\phi(x_n))^T \beta (t_n-w^T\phi(x_n)) \right).
+\end{align*}
+Here we consider that $S_0^{-1} = \alpha I$ and $m_0 = 0$ we get by continuing from above that
+\begin{align*}
+\ln(p(w|t)) &\propto -\frac{1}{2}w^T \alpha I w + -\frac{1}{2}(t-\Phi w)^T \beta (t-\Phi w) \\
+		&= -\frac{1}{2}\left( w^T \alpha I w + t^T\beta t - t^T \beta \Phi w - w^T\Phi^T \beta t + w^T \Phi^T \beta \Phi w \right) \\
+		&\propto -\frac{1}{2}\left( w^T (\alpha I + \beta \Phi^T \Phi) w - \beta t^T  \Phi w - \beta w^T\Phi^T t \right) \\
+		&= -\frac{1}{2}\left( w^T S_N^{-1} w - \beta t^T  \Phi w - \beta w^T\Phi^T t \right) \quad (\ast).
+\end{align*}
+Now we will note that 
+\begin{align*}
+\ln(\mathcal{N}(w|m_N,S_N)) &= -\frac{1}{2} (w - S_N(S_0^{-1}m_0 + \beta \Phi^Tt))^T S_N^{-1}(w - S_N(S_0^{-1}m_0 + \beta \Phi^Tt)) \\
+		&\propto -\frac{1}{2}\left( w^T S_N^{-1} w - \beta (S_N\Phi^T t)^T S_N^{-1} w - \beta w^T S_N^{-1} S_N \Phi^T t \right) \\
+		&= -\frac{1}{2}\left( w^T S_N^{-1} w - \beta t^T \Phi S_N^T S_N^{-1} w - \beta w^T S_N^{-1} S_N \Phi^T t \right)
+\end{align*}
+We know that $S_N$ is a symmetric matrix so $S_N^T = S_N$ and $S_N^T S_N^{-1} = I$. Then
+$$\ln(\mathcal{N}(w|m_N,S_N)) \propto -\frac{1}{2}\left( w^T S_N^{-1} w - \beta t^T \Phi w - \beta w^T \Phi^T t \right)$$
+which is the same result as we got in $(\ast)$. Thus we have shown that
+$$p(w|t) = \mathcal{N}(w|m_N,S_N).$$
+
+
 \section*{II.2 Classification}
 
 \subsection*{II.2.1 Linear discriminant analysis}
@@ -79,7 +113,16 @@ We implemented the linear discriminant analysis algorithm in \verb=classificatio
 Now to quantify the error of the LDA we compute the probability of misclassification for the training and test data respectively. The errors are
 $$\epsilon_{\text{training}} = 0.21$$
 and
-$$\epsilon_{\text{test}} = 0.18$$
+$$\epsilon_{\text{test}} = 0.18.$$
+
+\subsection*{II.2.5 LDA with rescaled data}
+
+The rescaled data with $M$ can be found in the files \verb=irisTrain.dt.scaled= and \verb=irisTest.dt.scaled=. The training and test errors we get for this transformed data are the same as we got before the transformation or 
+$$\epsilon_{\text{training}} = 0.21$$
+and
+$$\epsilon_{\text{test}} = 0.18.$$
+The short answer to \emph{why} we get the same errors is \emph{linearity}. This transformation by $M$ is just rescaling of the $y$-axis.
+
 
 \begin{comment}
 \begin{figure}[H]
