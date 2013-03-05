@@ -50,7 +50,11 @@ def plot_classes(datafile):
 #Pre: metric is a metric
 #     P is a set of points
 #     k is number of
-#     neigphourss
+#     neigbours
+#Ret: a function that takes a point as input
+#     and gives it's likeliest class based
+#     on k-NN with training set P, using
+#     the given metric to measure distances
 def k_closest(metric,P,k):
   def model(x):
     Map = lambda(y):[metric(x-y[0:2]),y]
@@ -65,9 +69,24 @@ def k_closest(metric,P,k):
     return np.argmax(cum)
   return model
 
+#Pre: P is a set of points
+#     k is number of
+#     neigbours
+#Ret: a function that takes a point as input
+#     and gives it's likeliest class based
+#     on k-NN with training set P, using
+#     the euclidean norm to measure distances
 def k_closest_norm(P,k):
     return k_closest(norm,P,k)
 
+#Pre: P is a set of points
+#     k is number of
+#     neigbours
+#Ret: a function that takes a point as input
+#     and gives it's likeliest class based
+#     on k-NN with training set P, using
+#     d(x,y)=||Mx-My|| with M={{1,0},{0,10}}
+#     to measure distances.
 def k_closest_M(P,k):
     M=np.array([[1,0],[0,10]])
     return k_closest(lambda(x,y) : norm(M.dot(x) - M.dot(y)) ,P,k)

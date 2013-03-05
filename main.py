@@ -42,8 +42,43 @@ if (raw_input("II2.1 Scatter plot of Iris training data and training and test er
     print cla.model_error('data/irisTest.dt', model)
     print
 
+if (raw_input("II2.3 Training and test error of k-NN? No will skip II2.4 (y/n):") == "y"):
+    P = cla.get_data('data/irisTrain.dt')
 
-if (raw_input("II2.5 Training and test error of the transformed data? (y/n):") == "y"):
+    print 'Error with norm as a metric on irisTrain:\\\\' 
+    NormTrain,NormPerClassTrain = cla.NNerrorTable('data/irisTrain.dt',cla.k_closest_norm,P)
+    print 'Error with norm as a metric on irisTest:\\\\' 
+    NormTest,NormPerClassTest = cla.NNerrorTable('data/irisTest.dt',cla.k_closest_norm,P)
+
+    if (raw_input("II2.4 Training and test error of k-NN with d metric? (y/n):") == "y"):
+
+        print 'Error with d as a metric on irisTrain:\\\\'
+        MTrain,MPerClassTrain = cla.NNerrorTable('data/irisTrain.dt',cla.k_closest_M,P)
+
+        print 'Error with d as a metric on irisTest:\\\\'
+        MTest,MPerClassTest = cla.NNerrorTable('data/irisTest.dt',cla.k_closest_M,P)
+        print 'Difference in error between Norm and d on irisTrain:\\\\'
+        print '\\begin{tabular}{ll}'
+        print ' k & total error & class 0 & class 1 & class 2\\\\'
+        for k in [1,3,5,7]:
+            print '%2d & %f' % (k,NormTrain[k]-MTrain[k]),
+            for c in [0,1,2]:
+                print '& %f' % (NormPerClassTrain[k][c]-MPerClassTrain[k][c]),
+            print '\\\\'
+        print '\\end{tabular}'
+        print 'Difference in error between Norm and d on irisTest:\\\\'
+        print '\\begin{center}'
+        print '\\begin{tabular}{l|l}'
+        print ' k & total error & class 0 & class 1 & class 2\\\\'
+        for k in [1,3,5,7]:
+            print '%2d & %f' % (k,NormTest[k]-MTest[k]),
+            for c in [0,1,2]:
+                print '& %f' % (NormPerClassTest[k][c]-MPerClassTest[k][c]),
+            print '\\\\'
+        print '\\end{tabular}'
+        print '\\end{center}'
+
+if (raw_input("II2.5 Training and test error of LDA with d metric? (y/n):") == "y"):
     M = np.array([[1,0],[0,10]])
     datafiles = ['data/irisTrain.dt', 'data/irisTest.dt']
     cla.scale_data(datafiles, M)
