@@ -117,19 +117,50 @@ def model_error(data_test, model):
     T = data.take([2], axis=1)
     Eq = np.equal(Y,T.T)
     
-    return 1 - Eq[Eq].size / float(Eq.size)
+    return 1 - Eq[Eq == True].size / float(Eq.size)
+
+def model_error_class(data_test, model):
+    y = model
+
+    f = open(data_test)
+    data = np.loadtxt(f)
+    f.close()
+
+    Error = [None]*3
+    for c in range(0,3):
+       class0=data[data[:,2]==c]
+       Y = [y(np.array([a,b])) for a,b,_ in class0]
+       T = class0.take([2], axis=1)
+       Eq = np.equal(Y,T.T)
+       Error[c]=1 - Eq[Eq == True].size / float(Eq.size)
+    
+    return Error
 
 def scale_data(datafiles, M):
     for datafile in datafiles:
         data = np.loadtxt(datafile)
         data[:,[0,1]] = data.take([0,1], axis=1).dot(M)
         np.savetxt(datafile + '.scaled', data, fmt='%.3e',)
-        
+
+def NNerrorTable(datapath,model,P):
+    print '\\begin{center}'
+    print '\\begin{tabular}{l|l}'
+    print ' k & total error & class 0 & class 1 & class 2\\\\'
+    Error = [None]*32
+    ErrorPerClass = [None]*32
+    for k in [1,3,5,7]:
+        Error[k]=model_error(datapath,model(P,k))
+        ErrorPerClass[k]=model_error_class(datapath,model(P,k))
+        print '%2d & %f & %f & %f & %f\\\\' % (k, Error[k],ErrorPerClass[k][0],ErrorPerClass[k][1],ErrorPerClass[k][2])
+    print '\\end{tabular}'
+    print '\\end{center}'
+    return Error,ErrorPerClass
+
 if __name__ == "__main__":
 
-    #M = np.array([[1,0],[0,10]])
-    #datafiles = ['data/irisTrain.dt', 'data/irisTest.dt']
-    #scale_data(datafiles, M)
+    M = np.array([[1,0],[0,10]])
+    datafiles = ['data/irisTrain.dt', 'data/irisTest.dt']
+    scale_data(datafiles, M)
     
     model = decicion_function('data/irisTrain.dt')
     print "The training error of LDA:"
@@ -147,52 +178,34 @@ if __name__ == "__main__":
     print
     
     P = get_data('data/irisTrain.dt')
-    print 'Precision with norm as a metric on irisTrain:\\\\' 
-    print '\\begin{tabular}{ll}'
-    print ' k & precision\\\\'
-    NormTrain = [None]*32
-    for k in [1,3,5,7]:
-        NormTrain[k]=model_error('data/irisTrain.dt',
-	    k_closest_norm(P,k))
-        print '%2d & %f\\\\' % (k, NormTrain[k])
-    print '\\end{tabular}'
+    print 'Error with norm as a metric on irisTrain:\\\\' 
+    NormTrain,NormPerClassTrain = NNerrorTable('data/irisTrain.dt',k_closest_norm,P)
 
-    print 'Precision with norm as a metric on irisTest:\\\\' 
+    print 'Error with norm as a metric on irisTest:\\\\' 
+    NormTest,NormPerClassTest = NNerrorTable('data/irisTest.dt',k_closest_norm,P)
+    print 'Error with d as a metric on irisTrain:\\\\'
+    MTrain,MPerClassTrain = NNerrorTable('data/irisTrain.dt',k_closest_M,P)
+
+    print 'Error with d as a metric on irisTest:\\\\'
+    MTest,MPerClassTest = NNerrorTable('data/irisTest.dt',k_closest_M,P)
+
+    print 'Difference in error between Norm and d on irisTrain:\\\\'
     print '\\begin{tabular}{ll}'
-    print ' k & precision\\\\'
-    NormTest = [None]*32
+    print ' k & total error & class 0 & class 1 & class 2\\\\'
     for k in [1,3,5,7]:
-        NormTest[k]=model_error('data/irisTest.dt',
-	    k_closest_norm(P,k))
-        print '%2d & %f\\\\' % (k, NormTest[k])
+        print '%2d & %f' % (k,NormTrain[k]-MTrain[k]),
+	for c in [0,1,2]:
+	    print '& %f' % (NormPerClassTrain[k][c]-MPerClassTrain[k][c]),
+	print '\\\\'
     print '\\end{tabular}'
-    print 'Precision with d as a metric on irisTrain:\\\\'
-    print '\\begin{tabular}{ll}'
-    print ' k & precision\\\\'
-    MTrain = [None]*32
+    print 'Difference in error between Norm and d on irisTest:\\\\'
+    print '\\begin{center}'
+    print '\\begin{tabular}{l|l}'
+    print ' k & total error & class 0 & class 1 & class 2\\\\'
     for k in [1,3,5,7]:
-        MTrain[k]=model_error('data/irisTrain.dt',
-	    k_closest_M(P,k))
-        print '%2d & %f\\\\' % (k,MTrain[k])
+        print '%2d & %f' % (k,NormTest[k]-MTest[k]),
+	for c in [0,1,2]:
+	    print '& %f' % (NormPerClassTest[k][c]-MPerClassTest[k][c]),
+	print '\\\\'
     print '\\end{tabular}'
-    print 'Precision with d as a metric on irisTest:\\\\'
-    print '\\begin{tabular}{ll}'
-    print ' k & precision\\\\'
-    MTest = [None]*32
-    for k in [1,3,5,7]:
-        MTest[k]=model_error('data/irisTest.dt',
-	    k_closest_M(P,k))
-        print '%2d & %f\\\\' % (k,MTest[k])
-    print '\\end{tabular}'
-    print 'Difference in precision between Norm and d on irisTrain:\\\\'
-    print '\\begin{tabular}{ll}'
-    print ' k & precision\\\\'
-    for k in [1,3,5,7]:
-        print '%2d & %f\\\\' % (k,NormTrain[k]-MTrain[k])
-    print '\\end{tabular}'
-    print 'Difference in precision between Norm and d on irisTest:\\\\'
-    print '\\begin{tabular}{ll}'
-    print ' k & precision\\\\'
-    for k in [1,3,5,7]:
-        print '%2d & %f\\\\' % (k,NormTest[k]-MTest[k])
-    print '\\end{tabular}'
+    print '\\end{center}'
