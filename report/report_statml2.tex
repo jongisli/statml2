@@ -155,6 +155,65 @@ the most accurate value for k appears to be 5. The case when $k=1$ is worst
 of the tested values, since the closest neighbour of a given point is not
 so likely to belong to the same class.
 
+\subsection*{II.2.3 Changing the metric}
+
+Since $M$ is non-singular, we have that for any vector $x$ there is a unique $y$ such that $Mx=y$ and vice versa. This will be used in our proofs.\\
+
+\subsubsection*{Proof that d is non decreasing}
+\[
+d(x,y)=||Mx-My||\geq0
+\]
+Trivial, since euclidean-norm is non-decreasing by definition.\\
+
+\subsubsection*{Proof that $d(x,y) \iff x=y$}
+Proof that $d(x,y)=0 \Rightarrow x=y$:
+\begin{align*}
+d(x,y)&=0\\
+||Mx-Mz||&=0\\
+x'-z'&=0, \text{where }Mx=x', Mz=z'\\
+x'&=z'\\
+x&=z
+\end{align*}
+
+Proof that $x=y => d(x,y)=0$:
+\begin{align*}
+x&=y\\
+x-y&=0\\
+Mx-My&=0\\
+||Mx-My||&=0\\
+d(x,y)&=0
+\end{align*}
+\subsubsection*{Proof of symmetry $d(x,y)=d(y,x)$}
+By contradiction:
+\begin{align*}
+&d(x,y)\neq d(y,x)\\
+\Rightarrow &||Mx-My||\neq ||My-Mx||\\
+\Rightarrow &||c||\neq ||-c||, \text{where } c= Mx-My\\
+\end{align*}
+Which contradicts the euclidean-norm.
+\subsubsection*{Proof of triangular inequality}
+\begin{align*}
+d(x,z) &\leq d(x,y) + d(y,z)\\
+||Mx-Mz|| &\leq ||Mx-My|| + ||My-Mz||\\
+||M(x-z)|| &\leq ||M(x-y)|| + ||M(y-z)||\\
+\end{align*}
+We know that:
+\begin{align*}
+||M(x-z)|| &= ||M(x-y) + M(y-z)||\\
+           &= ||Mx-My+My-Mz||\\
+	   &= ||Mx-Mz||
+\end{align*}
+We substitute in for $M(x-z)$:
+\begin{align*}
+||M(x-y) + M(y-z)|| &\leq ||M(x-y)|| + ||M(y-z)||\\
+\end{align*}
+Given $M(x-y)=a$ and $M(y-z)=b$:
+\begin{align*}
+||a + b|| &\leq ||a|| + ||b||\\
+\end{align*}
+Which holds for all vectors $a,b\in R^2$, according to
+the triangular inequality.
+
 \subsection*{II.2.4 Nearest neighbour with non-standard metric}
 
 Now we will repeat the classification done in section II 2.2, except we will
