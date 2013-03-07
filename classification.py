@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import numpy as np
 from numpy.linalg import norm
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from math import log
 
 img_format = 'png'
@@ -46,6 +46,14 @@ def plot_classes(datafile):
     plt.legend()
     plt.savefig('images/iris_scatter.%s' % img_format, format=img_format)
     plt.close()
+
+def k_tester(metric,P,k,x):
+    Map = lambda(y):[metric(x-y[0:2]),y]
+    l_ = map(Map, P)
+    l_.sort(key=lambda(x): x[0])
+    ks = map(lambda(x) : x[1],l_)[0:k]
+    return l_,ks
+     
 
 #Pre: metric is a metric
 #     P is a set of points
@@ -197,16 +205,17 @@ if __name__ == "__main__":
     print
     
     P = get_data('data/irisTrain.dt')
+    Ps = get_data('data/irisTrain.dt.scaled')
     print 'Error with norm as a metric on irisTrain:\\\\' 
     NormTrain,NormPerClassTrain = NNerrorTable('data/irisTrain.dt',k_closest_norm,P)
 
     print 'Error with norm as a metric on irisTest:\\\\' 
     NormTest,NormPerClassTest = NNerrorTable('data/irisTest.dt',k_closest_norm,P)
     print 'Error with d as a metric on irisTrain:\\\\'
-    MTrain,MPerClassTrain = NNerrorTable('data/irisTrain.dt',k_closest_M,P)
+    MTrain,MPerClassTrain = NNerrorTable('data/irisTrain.dt.scaled',k_closest_norm,Ps)
 
     print 'Error with d as a metric on irisTest:\\\\'
-    MTest,MPerClassTest = NNerrorTable('data/irisTest.dt',k_closest_M,P)
+    MTest,MPerClassTest = NNerrorTable('data/irisTest.dt.scaled',k_closest_norm,Ps)
 
     print 'Difference in error between Norm and d on irisTrain:\\\\'
     print '\\begin{tabular}{ll}'
