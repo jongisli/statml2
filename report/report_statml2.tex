@@ -40,9 +40,9 @@
 \subsection*{II.1.1 Maximum likelihood solution}
 
 The models for variable selections $1$ and $2$ are implemented in the file \verb=regression.py=. We then applied both models to the test set and computed the RMS averaged over $100$ different selections of training and test data (where the training data was always $80\%$ and test data $20\%$ of the data in the file \verb=bodyfat.txt=). Our measured RMS errors for selection $1$ and $2$ respectively were
-$$\text{RMS}_1 \approx 4.5$$
+$$\text{RMS}_1 = 4.5$$
 and
-$$\text{RMS}_2 \approx 5.$$
+$$\text{RMS}_2 = 5$$
 
 \subsection*{II.1.2 Maximum a posteriori solution}
 
@@ -159,7 +159,7 @@ so likely to belong to the same class.
 
 Since $M$ is non-singular, we have that for any vector $x$ there is a unique $y$ such that $Mx=y$ and vice versa. This will be used in our proofs.\\
 
-\subsubsection*{Proof that d is non decreasing}
+\subsubsection*{Proof that d is non-negative}
 \[
 d(x,y)=||Mx-My||\geq0
 \]
